@@ -1,3 +1,112 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+	:root {
+		--btn-text-case: none;
+	}
+	h1 {
+		@apply text-4xl font-bold;
+	}
+	h2 {
+		@apply text-3xl font-semibold mb-2;
+	}
+	p {
+		@apply text-lg;
+	}
+	ruby {
+		@apply relative top-1 mr-1;
+	}
+	a {
+		@apply text-primary hover:text-primary-focus;
+	}
+	/*
+	[lang="ja"] ruby {
+		@apply flex items-baseline;
+		rp {
+			@apply inline;
+			font-size: 50%;
+		}
+	}
+	*/
+}
+
+@layer components {
+	nav {
+		@apply tabs my-4;
+		a {
+			@apply tab tab-lg tab-bordered transition-colors;
+			&:not(.tab-active):hover {
+				border-color: hsla(var(--pf) / var(--tw-text-opacity));
+			}
+		}
+		&:after {
+			content: "";
+			@apply flex-1 tab-bordered;
+		}
+	}
+
+	.modal {
+		select {
+			@apply w-full overflow-hidden px-3 border border-solid border-base-content rounded-lg outline-none;
+		}
+		button {
+			@apply flex-1 btn btn-sm text-base btn-outline;
+		}
+		.toggle {
+			transition-property: background, box-shadow, border-color;
+			transition-duration: 200ms;
+			&:not(:checked) {
+				@apply bg-opacity-40 border-opacity-40 hover:bg-opacity-60 !important;
+			}
+			&:checked {
+				@apply hover:bg-opacity-80 !important;
+			}
+		}
+	}
+
+	th {
+		@apply select-none cursor-pointer text-secondary-content;
+		@apply bg-secondary rounded-none text-sm static !important;
+		div {
+			@apply flex items-center normal-case text-lg;
+			.name {
+				@apply flex-1 mr-2;
+			}
+			.sort {
+				@apply flex flex-col;
+				&:before,
+				&:after {
+					content: "";
+					border-width: 5px 4px;
+					border-color: hsla(var(--sc) / var(--tw-text-opacity)) transparent;
+					transition: border-color 150ms;
+				}
+				&:before {
+					@apply border-t-0 mb-px;
+				}
+				&:after {
+					@apply border-b-0 mt-px;
+				}
+				&.asc:after,
+				&.desc:before {
+					@apply hidden;
+				}
+			}
+		}
+		&:hover .sort {
+			&:before,
+			&:after {
+				border-color: hsla(var(--a) / var(--tw-text-opacity)) transparent;
+			}
+		}
+	}
+
+	tr td {
+		@apply border-base-300 rounded-none !important;
+		&:not(:last-child) {
+			@apply border-r;
+		}
+	}
+}

@@ -1,6 +1,11 @@
 module.exports = {
 	important: true,
 	purge: ["./src/**/*"],
+	theme: {
+		fontFamily: {
+			sans: ["Open Sans", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
+		},
+	},
 	plugins: [require("daisyui")],
 	daisyui: {
 		themes: [
@@ -9,11 +14,11 @@ module.exports = {
 					"primary": "#0d8af8",
 					"primary-focus": "#066fcb",
 					"primary-content": "#ffffff",
-					"secondary": "#42c28b",
-					"secondary-focus": "#31a573",
+					"secondary": "#4bcc8c",
+					"secondary-focus": "#40a371",
 					"secondary-content": "#ffffff",
-					"accent": "#37cdbe",
-					"accent-focus": "#2aa79b",
+					"accent": "#fa1e47",
+					"accent-focus": "#b51633",
 					"accent-content": "#ffffff",
 					"neutral": "#3d4451",
 					"neutral-focus": "#2a2e37",
@@ -25,7 +30,7 @@ module.exports = {
 					"info": "#2071f3",
 					"success": "#009485",
 					"warning": "#ff9900",
-					"error": "#ff2f24",
+					"error": "#ff3a24",
 				},
 			},
 		],
