@@ -117,6 +117,7 @@ const sorter: { [T in columns]: (left: data[number][T], right: data[number][T]) 
 };
 
 const dummySelect = document.createElement("select");
+const dummyDiv = document.createElement("div");
 
 interface State {
 	display: columns[];
@@ -127,26 +128,29 @@ interface State {
 	pronunciation: boolean;
 }
 const allOptions: (keyof State)[] = ["display", "hidden", "sort", "ascending", "search", "pronunciation"];
+function defaultState(): State {
+	return {
+		display: ["Index", "Japanese", "English", "Chinese", "Status", "Birth"],
+		hidden: ["Living", "Voice", "Source", "Note"],
+		sort: "Index",
+		ascending: true,
+		search: "",
+		pronunciation: false,
+	};
+}
 
 export default class Names extends React.Component<{}, State> {
 	selectHidden = dummySelect;
 	selectDisplay = dummySelect;
 
-	tableWrapperOuter?: HTMLDivElement;
-	tableWrapperInner?: HTMLDivElement;
-	tableHeader?: HTMLTableSectionElement;
-	scrollBar?: HTMLDivElement;
+	tableWrapperOuter = dummyDiv;
+	tableWrapperInner = dummyDiv;
+	tableOffset = dummyDiv;
+	tableHeight = dummyDiv;
 
 	constructor(props: {}) {
 		super(props);
-		const state: State = {
-			display: ["Index", "Japanese", "English", "Chinese", "Status", "Birth"],
-			hidden: ["Living", "Voice", "Source", "Note"],
-			sort: "Index",
-			ascending: true,
-			search: "",
-			pronunciation: false,
-		};
+		const state = defaultState();
 		allOptions.forEach(option => option in localStorage && (state[option] = JSON.parse(localStorage[option]) as never));
 		this.state = state;
 	}
@@ -264,13 +268,11 @@ export default class Names extends React.Component<{}, State> {
 	};
 
 	onResize = () => {
-		if (!this.tableWrapperOuter || !this.tableWrapperInner || !this.scrollBar) return;
-		this.tableWrapperOuter.style.height = this.tableWrapperInner.clientHeight + "px";
-		this.scrollBar.style.width = this.tableWrapperInner.scrollWidth + "px";
+		this.tableHeight.style.height = this.tableWrapperInner.scrollHeight + "px";
 	};
 
 	onScroll = () => {
-		if (this.tableHeader && this.tableWrapperOuter) this.tableHeader.style.top = Math.max(scrollY - this.tableWrapperOuter.offsetTop, 0) + "px";
+		this.tableWrapperInner.scrollTop = this.tableWrapperOuter.offsetTop - this.tableOffset.offsetTop;
 	};
 
 	componentDidMount() {
@@ -289,7 +291,7 @@ export default class Names extends React.Component<{}, State> {
 
 	render() {
 		const { display, hidden, sort, ascending, search, pronunciation } = this.state;
-		const filter = search
+		let filter = search
 			.split("")
 			.map(char => {
 				const charCode = char.charCodeAt(0);
@@ -297,7 +299,9 @@ export default class Names extends React.Component<{}, State> {
 				if (charCode >= 0xfe01 && charCode <= 0xff5e) return String.fromCharCode(charCode - 0xfee0);
 				return char;
 			})
-			.join("");
+			.join("")
+			.toLowerCase();
+		if (/[\u3099-\u30ff]/.test(filter)) filter = filter.replace(/[^\u3099-\u30ff]+/g, "");
 		return (
 			<>
 				<div>
@@ -356,7 +360,7 @@ export default class Names extends React.Component<{}, State> {
 									</select>
 								</div>
 							</div>
-							<div className="modal-action justify-between">
+							<div className="modal-action">
 								<label className="cursor-pointer label">
 									<input
 										type="checkbox"
@@ -366,17 +370,22 @@ export default class Names extends React.Component<{}, State> {
 									></input>
 									<span className="label-text text-xl ml-3">顯示發音</span>
 								</label>
-								<label htmlFor="edit-modal" className="btn text-lg px-8">
+								<div className="flex-1"></div>
+								<label className="btn btn-error text-lg px-8" onClick={() => this.setState(defaultState())}>
+									重設
+								</label>
+								<label htmlFor="edit-modal" className="btn btn-primary text-lg px-8">
 									關閉
 								</label>
 							</div>
 						</div>
 					</div>
 				</div>
-				<div className="w-full overflow-hidden shadow-2xl rounded-lg" ref={this.setElement("tableWrapperOuter")}>
-					<div className="w-full overflow-x-visible overflow-y-hidden" ref={this.setElement("tableWrapperInner")}>
+				<div ref={this.setElement("tableOffset")}></div>
+				<div className="w-full overflow-hidden shadow-2xl rounded-lg sticky top-0" ref={this.setElement("tableWrapperOuter")}>
+					<div className="w-full overflow-x-visible overflow-y-hidden max-h-screen" ref={this.setElement("tableWrapperInner")}>
 						<table className="table table-zebra w-full">
-							<thead className="relative" title="按一下以變更排序方式" ref={this.setElement("tableHeader")}>
+							<thead className="bg-primary sticky top-0" title="按一下以變更排序方式">
 								<tr>
 									{display.map(key => (
 										<th key={`0-${key}`} onClick={this.changeSort(key)}>
@@ -390,7 +399,7 @@ export default class Names extends React.Component<{}, State> {
 							</thead>
 							<tbody>
 								{data
-									.filter(row => row.Japanese.includes(filter) || row.English.includes(filter) || row.Chinese.split(";")[0].includes(filter))
+									.filter(row => row.Japanese.includes(filter) || row.English.toLowerCase().includes(filter) || row.Chinese.split(";")[0].includes(filter))
 									.sort((left, right) => sorter[sort](left[sort] as never, right[sort] as never) * (+ascending || -1) || left.Index - right.Index)
 									.map(row => (
 										<tr key={row.Index}>
@@ -405,17 +414,7 @@ export default class Names extends React.Component<{}, State> {
 						</table>
 					</div>
 				</div>
-				<div
-					className="w-full overflow-x-auto overflow-y-hidden sticky bottom-0 -mt-1"
-					ref={element => {
-						if (element)
-							element.addEventListener("scroll", () => {
-								if (this.tableWrapperInner) this.tableWrapperInner.scrollTo(element.scrollLeft, 0);
-							});
-					}}
-				>
-					<div className="h-1" ref={this.setElement("scrollBar")}></div>
-				</div>
+				<div ref={this.setElement("tableHeight")}></div>
 			</>
 		);
 	}
