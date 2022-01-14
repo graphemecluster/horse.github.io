@@ -12,6 +12,12 @@
 	h2 {
 		@apply text-3xl font-semibold mb-2;
 	}
+	h3 {
+		@apply text-3xl font-bold mt-6 mb-1;
+	}
+	h4 {
+		@apply text-xl mb-3;
+	}
 	p {
 		@apply text-lg;
 	}
@@ -21,15 +27,6 @@
 	a {
 		@apply text-primary hover:text-primary-focus;
 	}
-	/*
-	[lang="ja"] ruby {
-		@apply flex items-baseline;
-		rp {
-			@apply inline;
-			font-size: 50%;
-		}
-	}
-	*/
 }
 
 @layer components {
@@ -67,8 +64,7 @@
 	}
 
 	th {
-		@apply select-none cursor-pointer text-secondary-content;
-		@apply bg-secondary rounded-none text-sm static !important;
+		@apply bg-secondary rounded-none text-lg text-secondary-content static !important;
 		div {
 			@apply flex items-center normal-case text-lg;
 			.name {
@@ -104,9 +100,18 @@
 	}
 
 	tr td {
-		@apply border-base-300 rounded-none !important;
+		@apply border-base-300 border-b-0 rounded-none !important;
 		&:not(:last-child) {
 			@apply border-r;
+		}
+	}
+
+	.terms-table {
+		display: table;
+		min-width: 50%;
+		@apply mb-8 overflow-hidden shadow-xl rounded-lg;
+		table {
+			@apply table table-zebra w-full;
 		}
 	}
 }

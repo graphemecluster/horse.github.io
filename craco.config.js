@@ -1,3 +1,4 @@
+const path = require("path");
 const { addBeforeLoader, loaderByName } = require("@craco/craco");
 module.exports = {
 	eslint: {
@@ -10,7 +11,8 @@ module.exports = {
 	},
 	webpack: {
 		configure: config => {
-			addBeforeLoader(config, loaderByName("file-loader"), {
+			const fileLoader = loaderByName("file-loader");
+			addBeforeLoader(config, fileLoader, {
 				test: /\.csv$/,
 				loader: "csv-loader",
 				options: {
@@ -18,6 +20,10 @@ module.exports = {
 					header: true,
 					skipEmptyLines: true,
 				},
+			});
+			addBeforeLoader(config, fileLoader, {
+				include: path.resolve(__dirname, "./src/tables.txt"),
+				loader: path.resolve(__dirname, "./scripts/custom-loader.js"),
 			});
 			return config;
 		},

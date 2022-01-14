@@ -1,6 +1,7 @@
 import React from "react";
 import logo from "./logo.svg";
 import Names from "./Names";
+import Terms from "./Terms";
 import "./index.css";
 
 const sections = ["#names", "#terms", "#chars"] as const;
@@ -58,7 +59,9 @@ export default class App extends React.Component<{}, State> {
 					</article>
 					<article hidden={current !== "#terms"}>
 						<h2>術語對照</h2>
-						<section></section>
+						<section>
+							<Terms />
+						</section>
 					</article>
 					<article hidden={current !== "#chars"}>
 						<h2>新字提案</h2>

@@ -268,7 +268,7 @@ export default class Names extends React.Component<{}, State> {
 	};
 
 	onResize = () => {
-		this.tableHeight.style.height = this.tableWrapperInner.scrollHeight + "px";
+		this.tableHeight.style.height = this.tableWrapperInner.scrollHeight - this.tableWrapperInner.clientHeight + "px";
 	};
 
 	onScroll = () => {
@@ -385,7 +385,7 @@ export default class Names extends React.Component<{}, State> {
 				<div className="w-full overflow-hidden shadow-2xl rounded-lg sticky top-0" ref={this.setElement("tableWrapperOuter")}>
 					<div className="w-full overflow-x-visible overflow-y-hidden max-h-screen" ref={this.setElement("tableWrapperInner")}>
 						<table className="table table-zebra w-full">
-							<thead className="bg-primary sticky top-0" title="按一下以變更排序方式">
+							<thead className="bg-primary select-none cursor-pointer sticky top-0" title="按一下以變更排序方式">
 								<tr>
 									{display.map(key => (
 										<th key={`0-${key}`} onClick={this.changeSort(key)}>
