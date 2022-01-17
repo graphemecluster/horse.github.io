@@ -82,7 +82,7 @@ const mapper: { [T in columns]: (item: data[number][T], state: State) => React.R
 					{head.includes("來源不明") && (
 						<>
 							［
-							<a href="https://github.com/graphemecluster/umrax.github.io/issues" target="_blank">
+							<a href="https://github.com/umrax/umrax.github.io/issues" target="_blank">
 								貢獻資料來源
 							</a>
 							］
@@ -94,7 +94,7 @@ const mapper: { [T in columns]: (item: data[number][T], state: State) => React.R
 		return (
 			<>
 				未有出處［
-				<a href="https://github.com/graphemecluster/umrax.github.io/issues" target="_blank">
+				<a href="https://github.com/umrax/umrax.github.io/issues" target="_blank">
 					貢獻資料來源
 				</a>
 				］
