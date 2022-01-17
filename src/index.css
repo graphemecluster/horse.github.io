@@ -3,6 +3,12 @@
 @tailwind utilities;
 
 @layer base {
+	html {
+		font-size: 12px;
+		@screen sm {
+			font-size: 16px;
+		}
+	}
 	:root {
 		--btn-text-case: none;
 	}
@@ -26,6 +32,18 @@
 	}
 	a {
 		@apply text-primary hover:text-primary-focus;
+	}
+	.with-margin p {
+		@apply my-4;
+	}
+	.btn-primary:hover {
+		@apply bg-primary-focus border-primary-focus !important;
+	}
+	.btn-error:hover {
+		@apply bg-red-600 border-red-600 !important;
+	}
+	.btn-ghost:hover {
+		@apply bg-base-content bg-opacity-10 border-opacity-0 !important;
 	}
 }
 
@@ -112,6 +130,18 @@
 		@apply mb-8 overflow-hidden shadow-xl rounded-lg;
 		table {
 			@apply table table-zebra w-full;
+		}
+	}
+
+	.crop {
+		@apply w-full h-0 overflow-hidden;
+		padding-bottom: 40%;
+		filter: brightness(1.2);
+		img {
+			width: 134%;
+			max-width: 134%;
+			margin-top: -40%;
+			margin-left: -17%;
 		}
 	}
 }
