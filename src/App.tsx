@@ -41,7 +41,7 @@ export default function App() {
 						</p>
 						<p>
 							本網站以 MIT License 發佈，原始碼
-							<a href="https://github.com/graphemecluster/horse.github.io" target="_blank">
+							<a href="https://github.com/graphemecluster/umrax.github.io" target="_blank">
 								公開於 GitHub
 							</a>
 							，歡迎參與。
@@ -63,7 +63,7 @@ export default function App() {
 						</p>
 						<p>
 							本網站以 MIT License 發佈，原始碼
-							<a href="https://github.com/graphemecluster/horse.github.io" target="_blank">
+							<a href="https://github.com/graphemecluster/umrax.github.io" target="_blank">
 								公開於 GitHub
 							</a>
 							，歡迎參與。
@@ -94,7 +94,7 @@ export default function App() {
 						</div>
 					</a>
 					<a
-						href="https://github.com/graphemecluster/horse.github.io"
+						href="https://github.com/graphemecluster/umrax.github.io"
 						target="_blank"
 						className="btn btn-ghost my-3 px-3 flex flex-row-reverse sm:flex-row items-center text-base-content"
 					>
