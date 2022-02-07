@@ -116,7 +116,6 @@ const sorter: { [T in columns]: (left: data[number][T], right: data[number][T]) 
 	Note: (left, right) => cmp(left || "", right || ""),
 };
 
-const dummySelect = document.createElement("select");
 const dummyDiv = document.createElement("div");
 
 interface State {
@@ -126,8 +125,9 @@ interface State {
 	ascending: boolean;
 	search: string;
 	pronunciation: boolean;
+	focus: columns | null;
 }
-const allOptions: (keyof State)[] = ["display", "hidden", "sort", "ascending", "search", "pronunciation"];
+const storeOptions: (keyof State)[] = ["display", "hidden", "sort", "ascending", "search", "pronunciation"];
 function defaultState(): State {
 	return {
 		display: ["Index", "Japanese", "English", "Chinese", "Status", "Birth"],
@@ -136,13 +136,11 @@ function defaultState(): State {
 		ascending: true,
 		search: "",
 		pronunciation: false,
+		focus: null,
 	};
 }
 
 export default class Names extends React.Component<{}, State> {
-	selectHidden = dummySelect;
-	selectDisplay = dummySelect;
-
 	tableWrapperOuter = dummyDiv;
 	tableWrapperInner = dummyDiv;
 	tableOffset = dummyDiv;
@@ -151,7 +149,7 @@ export default class Names extends React.Component<{}, State> {
 	constructor(props: {}) {
 		super(props);
 		const state = defaultState();
-		allOptions.forEach(option => option in localStorage && (state[option] = JSON.parse(localStorage[option]) as never));
+		storeOptions.forEach(option => option in localStorage && (state[option] = JSON.parse(localStorage[option]) as never));
 		this.state = state;
 	}
 
@@ -162,102 +160,65 @@ export default class Names extends React.Component<{}, State> {
 		};
 
 	componentDidUpdate() {
-		allOptions.forEach(option => (localStorage[option] = JSON.stringify(this.state[option])));
+		storeOptions.forEach(option => (localStorage[option] = JSON.stringify(this.state[option])));
 		this.onResize();
 		this.onScroll();
 	}
 
-	chooseSelect(isDisplay: boolean) {
-		return isDisplay ? this.selectDisplay : this.selectHidden;
-	}
-
-	deselect = (isDisplay: boolean) => () => {
-		setTimeout(() => {
-			if (!(document.activeElement instanceof HTMLButtonElement)) this.chooseSelect(isDisplay).selectedIndex = -1;
-		}, 50);
-	};
-
-	delayFocus(isDisplay: boolean) {
-		setTimeout(() => {
-			this.chooseSelect(isDisplay).focus();
-			this.chooseSelect(!isDisplay).selectedIndex = -1;
-		}, 50);
-	}
-
 	moveUpwards = () => {
-		const index = this.selectDisplay.selectedIndex;
-		if (index > 0) {
-			this.setState(
-				({ display }) => ({
-					display: [...display.slice(0, index - 1), display[index], display[index - 1], ...display.slice(index + 1)],
-				}),
-				() => {
-					this.selectDisplay.selectedIndex = index - 1;
-					this.delayFocus(true);
-				}
-			);
-		} else this.delayFocus(true);
+		this.setState(({ display, focus }) => {
+			const index = display.indexOf(focus!);
+			return index > 0
+				? {
+						display: [...display.slice(0, index - 1), display[index], display[index - 1], ...display.slice(index + 1)],
+				  }
+				: null;
+		});
 	};
 
 	moveDownwards = () => {
-		const index = this.selectDisplay.selectedIndex;
-		if (index > -1 && index < this.state.display.length - 1) {
-			this.setState(
-				({ display }) => ({
-					display: [...display.slice(0, index), display[index + 1], display[index], ...display.slice(index + 2)],
-				}),
-				() => {
-					this.selectDisplay.selectedIndex = index + 1;
-					this.delayFocus(true);
-				}
-			);
-		} else this.delayFocus(true);
+		this.setState(({ display, focus }) => {
+			const index = display.indexOf(focus!);
+			return index > -1 && index < display.length - 1
+				? {
+						display: [...display.slice(0, index), display[index + 1], display[index], ...display.slice(index + 2)],
+				  }
+				: null;
+		});
 	};
 
 	addItem = () => {
-		const index = this.selectHidden.selectedIndex;
-		if (index > -1) {
-			let newIndex = -1;
-			this.setState(
-				({ display, hidden }) => {
-					display = [...display];
-					hidden = [...hidden];
-					const oldItem = hidden.splice(index, 1)[0];
-					let currIndex = allColumns.indexOf(oldItem);
-					while (newIndex == -1 && ++currIndex < allColumns.length) newIndex = display.indexOf(allColumns[currIndex]);
-					if (newIndex == -1) newIndex = display.length;
-					display.splice(newIndex, 0, oldItem);
-					return { display, hidden };
-				},
-				() => {
-					this.selectDisplay.selectedIndex = newIndex;
-					this.delayFocus(true);
-				}
-			);
-		} else this.delayFocus(true);
+		this.setState(({ display, hidden, focus }) => {
+			const index = hidden.indexOf(focus!);
+			if (index > -1) {
+				let newIndex = -1;
+				display = [...display];
+				hidden = [...hidden];
+				const oldItem = hidden.splice(index, 1)[0];
+				let currIndex = allColumns.indexOf(oldItem);
+				while (newIndex === -1 && ++currIndex < allColumns.length) newIndex = display.indexOf(allColumns[currIndex]);
+				if (newIndex === -1) newIndex = display.length;
+				display.splice(newIndex, 0, oldItem);
+				return { display, hidden };
+			} else return null;
+		});
 	};
 
 	removeItem = () => {
-		const index = this.selectDisplay.selectedIndex;
-		if (index > -1 && this.state.display.length > 1) {
-			let newIndex = -1;
-			this.setState(
-				({ display, hidden }) => {
-					display = [...display];
-					hidden = [...hidden];
-					const oldItem = display.splice(index, 1)[0];
-					const currIndex = allColumns.indexOf(oldItem);
-					newIndex = hidden.findIndex(item => allColumns.indexOf(item) > currIndex);
-					if (newIndex == -1) newIndex = hidden.length;
-					hidden.splice(newIndex, 0, oldItem);
-					return { display, hidden };
-				},
-				() => {
-					this.selectHidden.selectedIndex = newIndex;
-					this.delayFocus(false);
-				}
-			);
-		} else this.delayFocus(false);
+		this.setState(({ display, hidden, focus }) => {
+			const index = display.indexOf(focus!);
+			if (index > -1 && display.length > 1) {
+				let newIndex = -1;
+				display = [...display];
+				hidden = [...hidden];
+				const oldItem = display.splice(index, 1)[0];
+				const currIndex = allColumns.indexOf(oldItem);
+				newIndex = hidden.findIndex(item => allColumns.indexOf(item) > currIndex);
+				if (newIndex === -1) newIndex = hidden.length;
+				hidden.splice(newIndex, 0, oldItem);
+				return { display, hidden };
+			} else return null;
+		});
 	};
 
 	changeSort = (column: columns) => () => {
@@ -324,19 +285,19 @@ export default class Names extends React.Component<{}, State> {
 							</label>
 						</div>
 					</div>
-					<input type="checkbox" id="edit-modal" className="modal-toggle"></input>
+					<input type="checkbox" id="edit-modal" className="modal-toggle" onChange={() => this.setState({ focus: null })}></input>
 					<div className="modal">
 						<div className="modal-box p-10 sm:max-w-xl">
 							<h4 className="font-semibold text-3xl text-center text-neutral">編輯欄位</h4>
 							<div className="flex mt-6">
 								<div className="flex-1">
-									<select size={11} ref={this.setElement("selectHidden")} onChange={this.deselect(true)} onBlur={this.deselect(false)}>
+									<div className="edit-columns">
 										{hidden.map(key => (
-											<option key={`hidden-${key}`} value={key}>
+											<div key={`edit-${key}`} onMouseDown={() => this.setState({ focus: key })} className={this.state.focus === key ? "focus" : ""}>
 												{columns[key]}
-											</option>
+											</div>
 										))}
-									</select>
+									</div>
 								</div>
 								<div className="flex-1 flex flex-col mx-3">
 									<button onClick={this.moveUpwards}>向上移動 ↑</button>
@@ -351,20 +312,20 @@ export default class Names extends React.Component<{}, State> {
 									<div className="flex-1"></div>
 								</div>
 								<div className="flex-1">
-									<select size={11} ref={this.setElement("selectDisplay")} onChange={this.deselect(false)} onBlur={this.deselect(true)}>
+									<div className="edit-columns">
 										{display.map(key => (
-											<option key={`display-${key}`} value={key}>
+											<div key={`edit-${key}`} onMouseDown={() => this.setState({ focus: key })} className={this.state.focus === key ? "focus" : ""}>
 												{columns[key]}
-											</option>
+											</div>
 										))}
-									</select>
+									</div>
 								</div>
 							</div>
 							<div className="modal-action">
 								<label className="cursor-pointer label">
 									<input
 										type="checkbox"
-										className="toggle bg-base-content border-base-content"
+										className="toggle toggle-secondary"
 										checked={pronunciation}
 										onChange={event => this.setState({ pronunciation: event.target.checked })}
 									></input>
@@ -385,13 +346,13 @@ export default class Names extends React.Component<{}, State> {
 				<div className="w-full overflow-hidden shadow-2xl rounded-lg sticky top-0" ref={this.setElement("tableWrapperOuter")}>
 					<div className="w-full overflow-x-visible overflow-y-hidden max-h-screen" ref={this.setElement("tableWrapperInner")}>
 						<table className="table table-zebra w-full">
-							<thead className="bg-primary select-none cursor-pointer sticky top-0" title="按一下以變更排序方式">
+							<thead className="bg-primary select-none cursor-pointer sticky top-0 z-50" title="按一下以變更排序方式">
 								<tr>
 									{display.map(key => (
 										<th key={`0-${key}`} onClick={this.changeSort(key)}>
 											<div>
 												<span className="name">{columns[key]}</span>
-												<span className={"sort" + (sort == key ? (ascending ? " asc" : " desc") : "")}></span>
+												<span className={"sort" + (sort === key ? (ascending ? " asc" : " desc") : "")}></span>
 											</div>
 										</th>
 									))}

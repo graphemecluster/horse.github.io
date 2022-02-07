@@ -63,8 +63,14 @@
 	}
 
 	.modal {
-		select {
-			@apply w-full overflow-hidden px-3 border border-solid border-base-content rounded-lg outline-none;
+		.edit-columns {
+			@apply w-full h-64 overflow-hidden px-3.5 border border-solid border-base-content rounded-lg select-none;
+			div {
+				@apply px-0.5 text-base;
+				&.focus {
+					@apply bg-primary text-neutral-content;
+				}
+			}
 		}
 		button {
 			@apply flex-1 btn btn-sm text-base btn-outline;
@@ -73,7 +79,7 @@
 			transition-property: background, box-shadow, border-color;
 			transition-duration: 200ms;
 			&:not(:checked) {
-				@apply bg-opacity-40 border-opacity-40 hover:bg-opacity-60 !important;
+				@apply bg-opacity-50 border-opacity-40 hover:bg-opacity-40 !important;
 			}
 			&:checked {
 				@apply hover:bg-opacity-80 !important;
