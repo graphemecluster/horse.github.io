@@ -24,7 +24,7 @@ const status: Record<status, string> = {
 	Temporary: "來源請求：該馬匹有線索顯示已被命名，但缺乏來源或來源可信度不足，需要加入來源；",
 	Enquiry: "查詢：該名稱為向香港賽馬會進行查詢的回答；",
 	Newspaper: "報紙：有資料顯示該馬匹已被命名，且該來源為指定報章之一；",
-	Comfirmed: "已確認：香港賽馬會網站有該馬匹的譯名。",
+	Confirmed: "已確認：香港賽馬會網站有該馬匹的譯名。",
 };
 const allStatus = Object.keys(status) as status[];
 
@@ -52,7 +52,7 @@ const mapper: { [T in columns]: (item: data[number][T], state: State) => React.R
 	},
 	Status: item => item[0],
 	Birth: item => item.replace(/-0?/, "年").replace(/-0?/, "月") + "日",
-	Living: item => (item ? "健在" : ""),
+	Living: item => ["", "健在", <b>現役</b>][item],
 	Voice: (item, state) => {
 		if (!item) return;
 		const [name, pronunciation] = item.split(";");
@@ -105,15 +105,15 @@ const mapper: { [T in columns]: (item: data[number][T], state: State) => React.R
 	},
 	Note: item => item,
 };
-const sorter: { [T in columns]: (left: data[number][T], right: data[number][T]) => number } = {
+const sorter: { [T in columns]: (left: data[number][T], right: data[number][T], state: State) => number } = {
 	Index: (left, right) => left - right,
 	Japanese: cmp,
 	English: cmp,
 	Chinese: cmp,
 	Status: (left, right) => allStatus.indexOf(left) - allStatus.indexOf(right),
-	Birth: cmp,
-	Living: (left, right) => +left - +right,
-	Voice: (left, right) => cmp(left.split(";")[1], right.split(";")[1]),
+	Birth: (left, right, state) => (state.year ? cmp(left, right) : cmp(left.slice(5), right.slice(5))),
+	Living: (left, right) => left - right,
+	Voice: (left, right) => cmp(left ? left.split(";")[1] : "", right ? right.split(";")[1] : ""),
 	Source: (left, right) => cmp(left || "", right || ""),
 	Note: (left, right) => cmp(left || "", right || ""),
 };
@@ -128,8 +128,9 @@ interface State {
 	search: string;
 	pronunciation: boolean;
 	focus: columns | null;
+	year: boolean;
 }
-const storeOptions: (keyof State)[] = ["display", "hidden", "sort", "ascending", "search", "pronunciation"];
+const storeOptions: (keyof State)[] = ["display", "hidden", "sort", "ascending", "search", "pronunciation", "year"];
 function defaultState(): State {
 	return {
 		display: ["Index", "Japanese", "English", "Chinese", "Status", "Birth"],
@@ -139,6 +140,7 @@ function defaultState(): State {
 		search: "",
 		pronunciation: false,
 		focus: null,
+		year: true,
 	};
 }
 
@@ -226,7 +228,14 @@ export default class Names extends React.Component<{}, State> {
 	changeSort = (column: columns) => () => {
 		this.setState(({ sort, ascending }) => ({
 			sort: column,
-			ascending: sort != column || !ascending,
+			ascending: sort !== column ? column !== "Birth" : !ascending,
+		}));
+	};
+
+	changeYearSortMethod = (newYear: boolean) => () => {
+		this.setState(({ ascending, year }) => ({
+			year: newYear,
+			ascending: ascending === (year === newYear),
 		}));
 	};
 
@@ -253,7 +262,7 @@ export default class Names extends React.Component<{}, State> {
 	}
 
 	render() {
-		const { display, hidden, sort, ascending, search, pronunciation } = this.state;
+		const { display, hidden, sort, ascending, search, pronunciation, year } = this.state;
 		let filter = search
 			.split("")
 			.map(char => {
@@ -356,6 +365,31 @@ export default class Names extends React.Component<{}, State> {
 												<span className="name">{columns[key]}</span>
 												<span className={"sort" + (sort === key ? (ascending ? " asc" : " desc") : "")}></span>
 											</div>
+											{key === "Birth" && (
+												<div className="sort-method">
+													<div>
+														<div>排序方式</div>
+														<div className="mt-2 btn-group">
+															<input
+																type="radio"
+																name="sort-method"
+																className="btn btn-primary btn-outline btn-sm w-28"
+																data-title="年月日"
+																checked={year}
+																onChange={this.changeYearSortMethod(true)}
+															/>
+															<input
+																type="radio"
+																name="sort-method"
+																className="btn btn-primary btn-outline btn-sm w-28"
+																data-title="僅月日"
+																checked={!year}
+																onChange={this.changeYearSortMethod(false)}
+															/>
+														</div>
+													</div>
+												</div>
+											)}
 										</th>
 									))}
 								</tr>
@@ -363,7 +397,7 @@ export default class Names extends React.Component<{}, State> {
 							<tbody>
 								{data
 									.filter(row => row.Japanese.includes(filter) || row.English.toLowerCase().includes(filter) || row.Chinese.split(";")[0].includes(filter))
-									.sort((left, right) => sorter[sort](left[sort] as never, right[sort] as never) * (+ascending || -1) || left.Index - right.Index)
+									.sort((left, right) => sorter[sort](left[sort] as never, right[sort] as never, this.state) * (+ascending || -1) || left.Index - right.Index)
 									.map(row => (
 										<tr key={row.Index}>
 											{display.map(key => (

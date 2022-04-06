@@ -87,9 +87,21 @@
 	}
 
 	th {
-		@apply bg-secondary rounded-none text-lg text-secondary-content static !important;
-		div {
+		@apply bg-secondary rounded-none text-lg text-secondary-content relative !important;
+		> div {
 			@apply flex items-center normal-case text-lg;
+			&.sort-method {
+				@apply absolute pointer-events-none top-full left-1/2 -translate-x-1/2 opacity-0 transition-opacity;
+				> div {
+					@apply block m-2 w-max rounded-2xl bg-[#e6f6e8] text-base-content shadow-lg p-3;
+				}
+				input {
+					@apply bg-base-100;
+				}
+				&:hover {
+					@apply opacity-100 pointer-events-auto;
+				}
+			}
 			.name {
 				@apply flex-1 mr-2;
 			}
@@ -114,10 +126,15 @@
 				}
 			}
 		}
-		&:hover .sort {
-			&:before,
-			&:after {
-				border-color: hsla(var(--a) / var(--tw-text-opacity)) transparent;
+		&:hover {
+			.sort-method {
+				@apply opacity-100 pointer-events-auto;
+			}
+			.sort {
+				&:before,
+				&:after {
+					border-color: hsla(var(--a) / var(--tw-text-opacity)) transparent;
+				}
 			}
 		}
 	}

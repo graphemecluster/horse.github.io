@@ -2,12 +2,12 @@ declare type data = {
 	Index: number;
 	Japanese: string;
 	English: string;
-	Chinese: string;
-	Status: "Unnamed" | "Temporary" | "Enquiry" | "Newspaper" | "Comfirmed";
+	Chinese: `${string};${string}`;
+	Status: "Unnamed" | "Temporary" | "Enquiry" | "Newspaper" | "Confirmed";
 	Birth: `${number}-${number}-${number}`;
-	Living: boolean;
-	Voice: string;
-	Source: string | null;
+	Living: 0 | 1 | 2;
+	Voice: `${string};${string}` | null;
+	Source: `${string};${string}` | null;
 	Note: string | null;
 }[];
 declare const data: data;

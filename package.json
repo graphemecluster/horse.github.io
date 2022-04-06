@@ -1,9 +1,9 @@
 {
 	"name": "umrax.github.io",
 	"version": "0.2.0",
-	"description": "馬驛：馬娘相關馬名術語標準翻譯規範",
+	"description": "馬驛：馬娘相關馬名術語標準翻譯一覽",
 	"scripts": {
-		"start": "parcel public/index.html --dist-dir build --open --port 8080",
+		"start": "parcel public/index.html --dist-dir build --open --port 3000",
 		"build": "parcel build public/index.html --dist-dir build",
 		"prestart": "npm run build -w transformers/csv -w transformers/txt",
 		"deploy": "gh-pages -d build"
@@ -23,19 +23,19 @@
 	"dependencies": {
 		"react": "^17.0.2",
 		"react-dom": "^17.0.2",
-		"typescript": "^4.6.3"
+		"typescript": "^4.7.4"
 	},
 	"devDependencies": {
-		"@types/react": "^17.0.43",
-		"@types/react-dom": "^17.0.14",
-		"daisyui": "^2.13.6",
-		"gh-pages": "^3.2.3",
-		"parcel": "^2.4.1",
+		"@types/react": "^17.0.48",
+		"@types/react-dom": "^17.0.17",
+		"daisyui": "^2.22.0",
+		"gh-pages": "^4.0.0",
+		"parcel": "^2.7.0",
 		"parcel-transformer-csv": "file:transformers/csv",
 		"parcel-transformer-txt": "file:transformers/txt",
-		"postcss": "^8.4.12",
+		"postcss": "^8.4.16",
 		"sharp": "^0.29.3",
-		"tailwindcss": "^3.0.23"
+		"tailwindcss": "^3.1.8"
 	},
 	"workspaces": [
 		"transformers/*"
