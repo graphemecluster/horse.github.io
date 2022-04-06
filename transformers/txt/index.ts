@@ -1,6 +1,9 @@
-module.exports = function (source) {
-	const sections = [];
-	let curr;
+import type tables from "../../src/tables.txt";
+import { Transformer } from "@parcel/plugin";
+
+function transformation(source: string) {
+	const sections: tables = [];
+	let curr: tables[number];
 	source.split("\n\n").forEach(section => {
 		if (section.includes(",")) {
 			const [titles, header, ...rows] = section.split("\n");
@@ -17,4 +20,12 @@ module.exports = function (source) {
 		} else curr.notes = section.split("\n");
 	});
 	return "module.exports = " + JSON.stringify(sections);
-};
+}
+
+export default new Transformer({
+	async transform({ asset }) {
+		asset.setCode(transformation(await asset.getCode()));
+		asset.type = "js";
+		return [asset];
+	},
+});

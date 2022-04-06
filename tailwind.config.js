@@ -1,6 +1,6 @@
 module.exports = {
 	important: true,
-	purge: ["./src/**/*"],
+	content: ["./src/**/*"],
 	theme: {
 		fontFamily: {
 			sans: ["Open Sans", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],

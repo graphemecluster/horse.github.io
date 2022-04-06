@@ -2,16 +2,10 @@
 	"name": "umrax.github.io",
 	"version": "0.1.2",
 	"description": "馬驛：馬娘相關馬名術語標準翻譯規範",
-	"dependencies": {
-		"@craco/craco": "^6.2.0",
-		"react": "^17.0.2",
-		"react-dom": "^17.0.2",
-		"react-scripts": "4.0.3",
-		"typescript": "^4.3.5"
-	},
 	"scripts": {
-		"start": "craco start",
-		"build": "craco build",
+		"start": "parcel public/index.html --dist-dir build --open --port 8080",
+		"build": "parcel build public/index.html --dist-dir build",
+		"prestart": "npm run build -w transformers/csv -w transformers/txt",
 		"deploy": "gh-pages -d build"
 	},
 	"browserslist": {
@@ -26,16 +20,25 @@
 			"last 1 safari version"
 		]
 	},
-	"devDependencies": {
-		"@types/react": "^17.0.19",
-		"@types/react-dom": "^17.0.9",
-		"autoprefixer": "^9.8.6",
-		"csv-loader": "^3.0.3",
-		"daisyui": "^1.12.0",
-		"gh-pages": "^3.2.3",
-		"postcss": "^7.0.36",
-		"tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.7"
+	"dependencies": {
+		"react": "^17.0.2",
+		"react-dom": "^17.0.2",
+		"typescript": "^4.6.3"
 	},
+	"devDependencies": {
+		"@types/react": "^17.0.43",
+		"@types/react-dom": "^17.0.14",
+		"daisyui": "^2.13.6",
+		"gh-pages": "^3.2.3",
+		"parcel": "^2.4.1",
+		"parcel-transformer-csv": "file:transformers/csv",
+		"parcel-transformer-txt": "file:transformers/txt",
+		"postcss": "^8.4.12",
+		"tailwindcss": "^3.0.23"
+	},
+	"workspaces": [
+		"transformers/*"
+	],
 	"license": "MIT",
 	"homepage": "/"
 }

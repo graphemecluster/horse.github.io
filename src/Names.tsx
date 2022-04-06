@@ -270,7 +270,7 @@ export default class Names extends React.Component<{}, State> {
 						<div className="flex">
 							<div className="relative flex-1 mr-3">
 								<label className="absolute top-0 left-0 rounded-r-none btn btn-primary text-4xl font-normal w-12 pointer-events-none">
-									<span className="transform -rotate-45">⚲</span>
+									<span className="-rotate-45">⚲</span>
 								</label>
 								<input
 									type="text"

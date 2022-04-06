@@ -1,0 +1,10 @@
+{
+	"name": "parcel-transformer-txt",
+	"private": true,
+	"scripts": {
+		"build": "tsc"
+	},
+	"engines": {
+		"parcel": "^2.4.1"
+	}
+}
