@@ -33,12 +33,13 @@ const mapper: { [T in columns]: (item: data[number][T], state: State) => React.R
 	Japanese: item => <span lang="ja">{item}</span>,
 	English: item => <span lang="en">{item}</span>,
 	Chinese: (item, state) => {
+		if (!item) return;
 		const [name, pronunciation] = item.split(";");
 		return (
-			<span lang="zh-Hant-HK">
+			<span lang="zh-Hant-HK" title={state.pronunciation ? undefined : pronunciation}>
 				{state.pronunciation
 					? pronunciation.split(" ").map((rt, i) => (
-							<ruby key={`pronunciation-${i}`}>
+							<ruby key={`pronunciation-${i}`} lang="yue-Latn">
 								{name[i]}
 								<rp>（</rp>
 								<rt>{rt}</rt>
@@ -53,9 +54,10 @@ const mapper: { [T in columns]: (item: data[number][T], state: State) => React.R
 	Birth: item => item.replace(/-0?/, "年").replace(/-0?/, "月") + "日",
 	Living: item => (item ? "健在" : ""),
 	Voice: (item, state) => {
+		if (!item) return;
 		const [name, pronunciation] = item.split(";");
 		return (
-			<span lang="ja">
+			<span lang="ja" title={state.pronunciation ? undefined : pronunciation}>
 				{state.pronunciation ? (
 					<ruby>
 						{name}
@@ -101,7 +103,7 @@ const mapper: { [T in columns]: (item: data[number][T], state: State) => React.R
 			</>
 		);
 	},
-	Note: item => item || "",
+	Note: item => item,
 };
 const sorter: { [T in columns]: (left: data[number][T], right: data[number][T]) => number } = {
 	Index: (left, right) => left - right,

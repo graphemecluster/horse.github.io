@@ -3,6 +3,7 @@ import logo from "./logo.svg";
 import Names from "./Names";
 import Terms from "./Terms";
 import Chars from "./Chars";
+import data from "./data.csv";
 import "./index.css";
 
 const sections = ["#names", "#terms", "#chars"] as const;
@@ -46,7 +47,7 @@ export default function App() {
 							</a>
 							，歡迎參與。
 						</p>
-						<p>下表預設順序同遊戲官方網站，共 74 匹，點擊表格標題列欄位即可改變排序方式。</p>
+						<p>下表預設順序同遊戲官方網站，共 {data.length} 匹，點擊表格標題列欄位即可改變排序方式。</p>
 						<section>
 							<Names />
 						</section>
