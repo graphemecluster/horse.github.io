@@ -1,6 +1,6 @@
 {
 	"name": "umrax.github.io",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"description": "馬驛：馬娘相關馬名術語標準翻譯一覽",
 	"scripts": {
 		"start": "parcel public/index.html --dist-dir build --open --port 3000",
