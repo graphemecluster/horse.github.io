@@ -19,7 +19,7 @@ function transformation(source: string) {
 			);
 		} else curr.notes = section.split("\n");
 	});
-	return "module.exports = " + JSON.stringify(sections);
+	return `module.exports = JSON.parse(${JSON.stringify(JSON.stringify(sections))})`;
 }
 
 export default new Transformer({

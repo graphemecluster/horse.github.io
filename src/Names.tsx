@@ -133,8 +133,8 @@ interface State {
 const storeOptions: (keyof State)[] = ["display", "hidden", "sort", "ascending", "search", "pronunciation", "year"];
 function defaultState(): State {
 	return {
-		display: ["Index", "Japanese", "English", "Chinese", "Status", "Birth"],
-		hidden: ["Living", "Voice", "Source", "Note"],
+		display: ["Index", "Japanese", "English", "Chinese", "Status", "Source"],
+		hidden: ["Birth", "Living", "Voice", "Note"],
 		sort: "Index",
 		ascending: true,
 		search: "",
